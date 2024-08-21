@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+{% endblock %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <!-- Anime cover image -->
+        <div class="col-3">
+            <img src="{{ anime['images']['jpg']['large_image_url'] }}" class="img-fluid" alt="...">
+        </div>
+
+        <!-- Anime main info -->
+        <div class="col">
+            <figure class="text-start">
+                <h1>{{ anime['title_english'] }} ({{ anime['title_japanese'] }})</h1>
+                <span class="badge rounded-pill text-bg-info">{{ anime['year'] }}</span>
+                <span class="badge rounded-pill text-bg-secondary">{{ anime['type'] }}</span>
+                <span class="badge rounded-pill text-bg-secondary">{{ anime['episodes'] }} episodes</span>
+                <span class="badge rounded-pill text-bg-secondary">{{ anime['status'] }}</span>
+
+                {% if anime['airing'] == False %}
+                    <h6 class="mt-2">Aired: {{ anime['aired']['string'] }}</h6>
+                {% else %}
+                    <h6 class="mt-2">Airing: {{ anime['aired']['string'] }} | anime['broadcast']['string']</h6>
+                {% endif %}
+
+                <h6 class="mt-2">Rating: {{ anime['rating']}}</h6>
+                <h6 class="mt-2">Score: {{ anime['score']}} (Based on MyAnimeList)</h6>
+                <hr>
+                <h6 class="mt-2">Synopsis</h6>
+                <p>{{ anime['synopsis'] }}</p>
+                <h6 class="mt-2">Background</h6>
+                <p>{{ anime['background'] }}</p>
+
+                <h6>Genres:</h6>
+                {% for genre in anime['genres'] %}
+                    <span class="badge text-bg-info">{{ genre['name'] }}</span>
+                {% endfor %}
+            </figure>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Trailer -->
+    <div class="row">
+        <h1>Trailer</h1>
+        <iframe src="{{ anime['trailer']['embed_url'] }}" width="1280" height="720"></iframe>
+    </div>
+
+    <!-- more info -->
+    <div class="row">
+        <h6 class="mt-3">Producers</h6>
+        <p>
+        {% for producer in anime['producers'] %}
+            {{ producer['name'] }} {% if not loop.last %}, {% endif %}
+        {% endfor %}
+        </p>
+
+        <h6>Licensors</h6>
+        {% for licensor in anime['licensors'] %}
+            <p>{{ licensor['name'] }}</p>
+        {% endfor %}
+
+        <h6>Studios</h6>
+        {% for studio in anime['studios'] %}
+            <p>{{ studio['name'] }}</p>
+        {% endfor %}
+    </div>
+
+        <hr>
+
+    <h1>Related Anime</h1>
+    <div class="row row-cols-1 row-cols-md-6 g-3 mt-2">
+        {% for related_anime in anime['relations'] %}
+            {% if related_anime['relation'] == 'Sequel' or related_anime['relation'] == 'Prequel' %}
+                {% for info in related_anime['entry'] %}
+                    <div class="col">
+                        <div class="card border-info" style="width: 200px; height: 250px;">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ info['name'] }}</h5>
+                                <h6 class="card-subtitle mb-2 text-body-secondary">{{ info['type'] }}</h6>
+                                <p class="card-text">{{ related_anime['relation'] }}</p>
+                                <a href="{{ url_for('details', anime_id=info['mal_id']) }}" class="card-link">
+                                    <button type="button" class="btn btn-info">More info</button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
